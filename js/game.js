@@ -66,10 +66,10 @@ Game.prototype._renderMap = function(map) {
           break;
         case obstacle:
           cell.src = "img/boulder.gif";
-          cell.style.backgroundImage = "img/moonFloor2.png";
+          cell.style.backgroundImage = "url(img/moonFloor2.png)";
           break;
         case limit:
-          cell.src = "img/limit.png";
+          cell.src = "img/mars2.png";
           break;
         case robot:
           cell.src = "img/robot.png";
