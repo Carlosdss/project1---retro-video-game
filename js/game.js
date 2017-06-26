@@ -1,4 +1,12 @@
 function Game() {
+
+  this.codes = {
+    empty: 0,
+    ground: 1,
+    obstacle: 2,
+    limit: 3,
+    robot: 4
+  }
   //Grid construction. Everything is wall
   this.mapScenario = [
     [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
@@ -21,10 +29,11 @@ function Game() {
     [0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   ];
-
+ this._renderMap(this.mapScenario);
+ this._renderMap(this.gameObjects)
 }
 
-Game.prototype.renderMapScenario = function() {
+Game.prototype._renderMap = function(map) {
   var empty = 0;
   var ground = 1;
   var obstacle = 2;
@@ -33,64 +42,53 @@ Game.prototype.renderMapScenario = function() {
 
   var box = document.querySelector(".box");
   var output = document.querySelector(".output");
-  var rows = this.mapScenario.length;
+  var rows = map.length;
   var columns = this.mapScenario[0].length;
 
   var size = 64;
 
-  if (box.hasChildNodes()) {
-    for (var i = 0; i < ROWS * COLUMNS; i++) {
-      stage.removeChild(stage.firstChild);
+  /*if (box.hasChildNodes()) {
+    for (var i = 0; i < rows * columns; i++) {
+      box.removeChild(box.firstChild);
     }
-  };
+  };*/
 
   for (var i = 0; i < rows; i++) {
-    for (var j = 0; j < rows; j++) {
+    for (var j = 0; j < columns; j++) {
+
       var cell = document.createElement("img");
       cell.setAttribute("class", "cell");
-      stage.appendChild(cell);
+      box.appendChild(cell);
 
-      switch (map[row][column]) {
-        case empty:
-          cell.src = "../images/water.png";
+      switch (map[i][j]) {
+        case ground:
+          cell.src = "img/moonFloor2.png";
           break;
-          Making Maps
-          259
-        case ISLAND:
-          cell.src = "../images/island.png";
+        case obstacle:
+          cell.src = "img/boulder.gif";
+          cell.style.backgroundImage = "img/moonFloor2.png";
           break;
-        case PIRATE:
-          cell.src = "../images/pirate.png";
+        case limit:
+          cell.src = "img/limit.png";
           break;
-        case HOME:
-          cell.src = "../images/home.png";
+        case robot:
+          cell.src = "img/robot.png";
           break;
       }
       //Position the cell
-      cell.style.top = row * SIZE + "px";
-      cell.style.left = column * SIZE + "px";
+      cell.style.top = i * size + "px";
+      cell.style.left = j * size + "px";
     }
   }
 
 }
 
+window.onload = function () {
+  game = new Game();
+};
 
 
-
-
-
-
-
-}
-
-
-
-
-}
-
-
-
-
+/*
 
 function buildMap(map) {
   for (var row = 0; row < ROWS; row++) {
@@ -160,3 +158,4 @@ function buildMap(map) {
     }
   }
 }
+*/

@@ -1,5 +1,3 @@
-body {
-}
 
 .container-fluid{
   height:;
@@ -10,6 +8,7 @@ body {
   padding: 0px;
   height: 800px;
   padding-top: 20px;
+}
 
 .cell {
 display: block;
