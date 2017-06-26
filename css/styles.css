@@ -1,0 +1,30 @@
+body {
+}
+
+.container-fluid{
+  height:;
+  position: relative;
+  background-image: url("../img/1181242105145.png");
+  background-size: 50%;
+  margin: 0%;
+  padding: 0px;
+  height: 800px;
+  padding-top: 20px;
+
+.cell {
+display: block;
+position: absolute;
+width: 64px;
+height: 64px;
+}
+
+.box {
+  background-color: Navy;
+  height: 512px;
+  width: 704px;
+  padding: 0px;
+  border: 1px solid white;
+  margin-top: 15%;
+  margin-left: 25%;
+  position: relative;
+}
