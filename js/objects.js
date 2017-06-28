@@ -1,5 +1,5 @@
 function Soldier(x, y){
-this.size = 60;
+this.size = 50;
 this.row = y;
 this.column = x;
 this.x = this.column * this.size;
@@ -19,19 +19,23 @@ Soldier.prototype.move = function(){
 Soldier.prototype.checkRobot = function(){
 }
 
-Soldier.prototype.checkObstacle = function(){
-}
+/*Soldier.prototype.checkObstacle = function(){
+  if (this.directionY == 1){
+
+  }
+  this.row =
+}*/
 
 
 
 
 function Robot(speed){
-  this.size = 60;
+  this.size = 50;
   this.row = (1 + Math.floor(Math.random()* 11));
   this.column = (1 + Math.floor(Math.random()* 14));
   this.x = this.column * this.size;
   this.y = this.row * this.size;
-  this.speed = 5;
+  this.speed = speed;
   this._randomDirection();
 }
 

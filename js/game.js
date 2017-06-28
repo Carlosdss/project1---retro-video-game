@@ -55,7 +55,7 @@ Game.prototype.update = function() {
   this.soldier.move();
 
   var that = this;
-  this.arraySprites.forEach(function(e){
+  this.arrayRobots.forEach(function(e){
     e.move();
   });
 
@@ -68,23 +68,25 @@ Game.prototype.renderObjects = function (){
     left: this.soldier.x,
   });
   var that = this;
-  this.arraySprites.forEach(function(e){
-    $(".robot").css({
+  var robot = 1;
+  this.arrayRobots.forEach(function(e){
+    $(".robot" + robot).css({
       top: e.y,
       left: e.x
     });
+    robot++;
   })
 }
 
 
 Game.prototype._generateObjects = function(robots) {
-  this.arraySprites = [];
+  this.arrayRobots = [];
   this.soldier = new Soldier(15, 11);
   //this.arraySprites.push(this.soldier);
   for (i=0; i<robots; i++){
     var name = "robot" + i;
-    Robot[name]  = new Robot(4);
-    this.arraySprites.push(Robot[name]);
+    Robot[name]  = new Robot(2);
+    this.arrayRobots.push(Robot[name]);
   }
 }
 
@@ -102,6 +104,7 @@ Game.prototype._renderMap = function(map) {
   var columns = this.mapScenario[0].length;
 
   var size = 50;
+  var robotCounter = 1;
 
   /*if (box.hasChildNodes()) {
     for (var i = 0; i < rows * columns; i++) {
@@ -132,9 +135,10 @@ Game.prototype._renderMap = function(map) {
           cell.src = "img/mars2.png";
           break;
         case robot:
-          cell.setAttribute("class", "cell robot");
+          cell.setAttribute("class", "cell robot" + "" + robotCounter + "");
           box.appendChild(cell);
           cell.src = "img/robot.png";
+          robotCounter++;
           break;
         case soldier:
           cell.setAttribute("class", "cell soldier");
