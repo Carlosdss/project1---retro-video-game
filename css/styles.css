@@ -46,6 +46,7 @@ height: 50px;
   position: absolute;
   top: 0px;
   left: 70px;
+  z-index: 5;
   height: 500px;
 
 }

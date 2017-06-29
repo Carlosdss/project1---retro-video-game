@@ -1,5 +1,5 @@
 function Game() {
-  this.state = "pressStart"
+  this.state = "player1"
 
   this.codes = {
     empty: 0,
@@ -45,11 +45,11 @@ function Game() {
   this._renderMap(this.mapScenario);
   this._renderMap(this.gameObjects);
   this._generateObjects(3)
-  this._assignControlsToKeys();
   this.checkGameState();
 }
 
 Game.prototype.start = function() {
+  this._assignControlsToKeys();
   if (!this.intervalId) {
     this.intervalId = setInterval(this.update.bind(this), 70);
   }
@@ -60,40 +60,50 @@ Game.prototype.update = function() {
   this.soldier.move();
   this.soldier.checkLimit();
   for (var i = 0; i < this.arrayRobots.length; i++) {
+    var flag = false;
     var flag = this.chekCollisionSoldierRobot(this.soldier, this.arrayRobots[i]);
     if (flag == true) {
-
-      this.playerLives--;
       clearInterval(this.intervalId);
+      this.playerLives--;
 
-      if (this.playerLives == 0) {
-        if (this.state == "player1") {
-          this.state == "player2";
-          //this.restart();
-          return
-        } else if (this.state == "player2") {
-          this.state == "gameOver";
-          //this.restart();
-          return
-        }
-      } else {
-        //this.restart();
-        return
-      }
+      var i = 0;
+      var timer = setInterval(function() {
+        i++;
+        if (i === 2) clearInterval(timer);
+      }, 1000);
+
+      this.restart();
+      return
     }
   }
 
-var that = this;
-this.arrayRobots.forEach(function(e, i) {
-  if (i < this.arrayRobots.length - 1) {
-    e.move();
-    e.checkLimit()
-  }
-}.bind(this));
-this.arrayRobots[2].moveTarget(this.soldier.x, this.soldier.y);
-this.arrayRobots[2].checkLimit();
-this.renderObjects();
-this.checkGameState();
+  var that = this;
+  this.arrayRobots.forEach(function(e, i) {
+    if (i < this.arrayRobots.length - 1) {
+      e.move();
+      e.checkLimit()
+    }
+  }.bind(this));
+  this.arrayRobots[2].moveTarget(this.soldier.x, this.soldier.y);
+  this.arrayRobots[2].checkLimit();
+  flag = false;
+  flag = this.chekCollisionSoldierRobot(this.soldier, this.arrayRobots[2]);
+    if (flag == true) {
+      clearInterval(this.intervalId);
+      this.playerLives--;
+
+      var i = 0;
+      var timer = setInterval(function() {
+        i++;
+        if (i === 2) clearInterval(timer);
+      }, 1000);
+
+      this.restart();
+      return
+    }
+
+  this.renderObjects();
+  this.checkGameState();
 }
 
 Game.prototype.renderObjects = function() {
@@ -271,17 +281,59 @@ Game.prototype._assignControlsToKeys = function() {
   }.bind(this));
 }
 
-Game.prototype.chekCollisionSoldierRobot = function(element1, element2, size1, size2) {
-  var vx = element1.centerX - element2.centerX;
-  var vy = element1.centerY - element2.centerY;
+Game.prototype.chekCollisionSoldierRobot = function(element1, element2) {
+  var centerX1 = element1.x + element1.size/2;
+  var centerX2 = element2.x + element2.size/2;
+  var centerY1 = element1.y + element1.size/2;
+  var centerY2 = element2.y + element2.size/2;
 
-  var minDistance = (((element1.size + element2.size)/2)-10);
-  return (Math.abs(vx) <= minDistance && Math.abs(vy) <= minDistance)
+  var vx = Math.abs(centerX1 - centerX2);
+  var vy = Math.abs(centerY1 - centerY2);
+
+  var minDistance = (((element1.size + element2.size) / 2) - 5);
+  return (vx <= minDistance && vy <= minDistance)
+}
+
+Game.prototype.restart = function() {
+  if (this.playerLives == 0) {
+    switch (this.state) {
+      case "player1":
+        this.state = "player2";
+        break;
+      case "player2":
+        this.state = "gameOver";
+    }
+    this.playerLives = 3;
+  }
+
+  var cancelKeypress = false;
+
+  document.onkeydown = function(evt) {
+    evt = evt || window.event;
+    cancelKeypress = /^(13|32|37|38|39|40)$/.test("" + evt.keyCode);
+    if (cancelKeypress) {
+      return false;
+    }
+  };
+
+  this.soldier.x = 700;
+  this.soldier.y = 550;
+  this.arrayRobots.forEach(function(e) {
+    e._randomPosition();
+    e._randomPosition();
+  });
+
+  this.renderObjects();
+
+  $(document).on('keydown', function() {
+    game.start();
+});
 }
 
 window.onload = function() {
   $(".player").hide();
   $(".score").hide();
+  $(".lives").hide();
 
   $('.start').on('click', function() {
     game = new Game();
