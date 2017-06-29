@@ -8,6 +8,7 @@
   padding: 0px;
   height: 790px;
   padding-top: 20px;
+  font-family: 'Press Start 2P', cursive;
 }
 
 .cell {
@@ -26,4 +27,54 @@ height: 50px;
   margin-top: 1%;
   margin-left: 30%;
   position: relative;
+}
+
+.startGame{
+  position: absolute;
+  top: 605px;
+  left: 275px;
+  z-index: 5;
+  margin: 0;
+  padding: 0;
+  border: 0px;
+}
+
+.start{
+  height: 40px;
+}
+
+.player{
+  position: absolute;
+  font-size: 1.5em;
+  top: 12px;
+  left: 50px;
+  z-index: 5;
+  margin: 0;
+  padding: 0;
+  border: 0px;
+  color: white;
+}
+
+.score{
+  position: absolute;
+  font-size: 1.5em;
+  top: 12px;
+  left: 550px;
+  z-index: 5;
+  margin: 0;
+  padding: 0;
+  border: 0px;
+  color: white;
+}
+
+.pressStart{
+  position: absolute;
+  font-size: 1.5em;
+  top: 12px;
+  left: 220px;
+  z-index: 5;
+  margin: 0;
+  padding: 0;
+  border: 0px;
+  color: white;
 }

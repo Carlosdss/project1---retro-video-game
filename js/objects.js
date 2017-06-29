@@ -58,13 +58,24 @@ Robot.prototype._randomDirection = function() {
 }
 
 Robot.prototype.move = function() {
-  this.x += (this.directionX * this.speed);
-  this.y += (this.directionY * this.speed);
+  switch (this.direction) {
+    case "left":
+      this.x -= this.speed
+      break;
+    case "up":
+      this.y -= this.speed
+      break;
+    case "right":
+      this.x += this.speed
+      break;
+    case "down":
+      this.y += this.speed
+      break;
+  }
 }
 
 Robot.prototype.checkObstacle = function() {
-  if (this.x <= 50 || this.x >= 700) {
-    this.directionX = -this.directionX);
-}
-return (this.x <= 50 || this.x >= 700 || this.y <= 50 || this.y >= 550) ? true : false;
-}
+    if (this.x <= 50 || this.x >= 700 || this.y <= 50 || this.y >= 550) {
+      this._randomDirection();
+    }
+  };

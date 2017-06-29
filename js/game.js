@@ -44,7 +44,6 @@ function Game() {
   this._assignControlsToKeys();
 }
 
-
 Game.prototype.start = function() {
   if (!this.intervalId) {
     this.intervalId = setInterval(this.update.bind(this), 50);
@@ -52,16 +51,14 @@ Game.prototype.start = function() {
 };
 
 Game.prototype.update = function() {
+  
   this.soldier.move();
 
   var that = this;
   this.arrayRobots.forEach(function(e) {
     e.move();
-    if (e.checkObstacle()) {
-      e._randomDirection();
-    };
+    e.checkObstacle()
   });
-
   this.renderObjects();
 }
 
