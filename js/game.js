@@ -34,7 +34,7 @@ function Game() {
     [0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -50,19 +50,24 @@ function Game() {
 
 Game.prototype.start = function() {
   if (!this.intervalId) {
-    this.intervalId = setInterval(this.update.bind(this), 50);
+    this.intervalId = setInterval(this.update.bind(this), 70);
   }
 };
 
 Game.prototype.update = function() {
 
   this.soldier.move();
+  this.soldier.checkLimit();
 
   var that = this;
-  this.arrayRobots.forEach(function(e) {
+  this.arrayRobots.forEach(function(e, i) {
+    if (i < this.arrayRobots.length - 1){
     e.move();
-    e.checkObstacle()
-  });
+    e.checkLimit()
+    }
+  }.bind(this));
+  this.arrayRobots[2].moveTarget(this.soldier.x, this.soldier.y);
+  this.arrayRobots[2].checkLimit();
   this.renderObjects();
   this.checkGameState();
 }
@@ -127,7 +132,7 @@ Game.prototype._generateObjects = function(robots) {
   //this.arraySprites.push(this.soldier);
   for (i = 0; i < robots; i++) {
     var name = "robot" + i;
-    Robot[name] = new Robot(2);
+    Robot[name] = new Robot(4);
     this.arrayRobots.push(Robot[name]);
   }
 }
@@ -197,7 +202,7 @@ Game.prototype._renderMap = function(map) {
 }
 
 Game.prototype._assignControlsToKeys = function() {
-  that = this;
+
   $(document).on('keydown', function(e) {
     switch (e.keyCode) {
       case 38:
@@ -220,12 +225,20 @@ Game.prototype._assignControlsToKeys = function() {
 
   $(document).on('keyup', function(e) {
     switch (e.keyCode) {
-      case 37:
       case 38:
-      case 39:
-      case 40:
-        this.soldier.directionX = 0;
         this.soldier.directionY = 0;
+        break;
+
+      case 40:
+        this.soldier.directionY = 0;
+        break;
+
+      case 39:
+        this.soldier.directionX = 0;
+        break;
+
+      case 37:
+        this.soldier.directionX = 0;
         break;
     }
   }.bind(this));
@@ -240,9 +253,7 @@ window.onload = function() {
     game.state = "player1"
     game.start();
   });
-
 }
-
 
 
 /*
