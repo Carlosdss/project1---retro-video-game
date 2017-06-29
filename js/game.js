@@ -1,4 +1,5 @@
 function Game() {
+  this.state = "pressStart"
 
   this.codes = {
     empty: 0,
@@ -7,6 +8,8 @@ function Game() {
     limit: 3,
     robot: 4
   }
+  this.player1Score = 0;
+  this.player2Score = 0;
   //Grid construction. Everything is wall
   this.mapScenario = [
     [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
@@ -42,6 +45,7 @@ function Game() {
   this._renderMap(this.gameObjects);
   this._generateObjects(3)
   this._assignControlsToKeys();
+  this.checkGameState();
 }
 
 Game.prototype.start = function() {
@@ -51,7 +55,7 @@ Game.prototype.start = function() {
 };
 
 Game.prototype.update = function() {
-  
+
   this.soldier.move();
 
   var that = this;
@@ -60,6 +64,7 @@ Game.prototype.update = function() {
     e.checkObstacle()
   });
   this.renderObjects();
+  this.checkGameState();
 }
 
 Game.prototype.renderObjects = function() {
@@ -78,6 +83,43 @@ Game.prototype.renderObjects = function() {
   })
 }
 
+Game.prototype.checkGameState = function() {
+  if (this.state == "pressStart") {
+    $(".player").hide();
+    $(".score").hide();
+    $(".intro").show();
+    $(".pressStart").show();
+    $(".startGame").show();
+  }
+
+  if (this.state == "player1") {
+    $(".intro").hide();
+    $(".pressStart").hide();
+    $(".startGame").hide();
+    $(".player").html("Player 1");
+    $(".player").show();
+    $(".score").html("Score: " + this.player1Score);
+    $(".score").show();
+  }
+
+  if (this.state == "player2") {
+    $(".intro").hide();
+    $(".pressStart").hide();
+    $(".startGame").hide();
+    $(".player").html("Player 2");
+    $(".player").show();
+    $(".score").html("Score: " + this.player2Score);
+    $(".score").show();
+  }
+
+  if (this.state == "gameOver") {
+    $(".player").hide();
+    $(".pressStart").hide();
+    $(".score").hide();
+    $(".gameOver").show();
+    $(".pressStart").show();
+  }
+}
 
 Game.prototype._generateObjects = function(robots) {
   this.arrayRobots = [];
@@ -190,11 +232,16 @@ Game.prototype._assignControlsToKeys = function() {
 }
 
 window.onload = function() {
-  game = new Game();
-  game.start();
-};
+  $(".player").hide();
+  $(".score").hide();
 
+  $('.start').on('click', function() {
+    game = new Game();
+    game.state = "player1"
+    game.start();
+  });
 
+}
 
 
 
