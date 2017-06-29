@@ -50,9 +50,12 @@ function Game() {
 
 Game.prototype.start = function() {
   this._assignControlsToKeys();
-  if (!this.intervalId) {
+
+    //this.intervalId !== null && clearInterval(this.intervalId)
+
+    if(this.intervalId!==null){clearInterval(this.intervalId)}
     this.intervalId = setInterval(this.update.bind(this), 70);
-  }
+
 };
 
 Game.prototype.update = function() {
@@ -65,12 +68,6 @@ Game.prototype.update = function() {
     if (flag == true) {
       clearInterval(this.intervalId);
       this.playerLives--;
-
-      var i = 0;
-      var timer = setInterval(function() {
-        i++;
-        if (i === 2) clearInterval(timer);
-      }, 1000);
 
       this.restart();
       return
@@ -92,11 +89,6 @@ Game.prototype.update = function() {
       clearInterval(this.intervalId);
       this.playerLives--;
 
-      var i = 0;
-      var timer = setInterval(function() {
-        i++;
-        if (i === 2) clearInterval(timer);
-      }, 1000);
 
       this.restart();
       return
@@ -152,6 +144,7 @@ Game.prototype.checkGameState = function() {
     $(".player").show();
     $(".score").html("Score: " + this.player2Score);
     $(".score").show();
+    $(".lives").html("Lifes: " + this.playerLives);
   }
 
   if (this.state == "gameOver") {
@@ -306,6 +299,7 @@ Game.prototype.restart = function() {
     this.playerLives = 3;
   }
 
+/*
   var cancelKeypress = false;
 
   document.onkeydown = function(evt) {
@@ -314,26 +308,40 @@ Game.prototype.restart = function() {
     if (cancelKeypress) {
       return false;
     }
-  };
+  };*/
 
   this.soldier.x = 700;
   this.soldier.y = 550;
   this.arrayRobots.forEach(function(e) {
     e._randomPosition();
-    e._randomPosition();
+    e._randomDirection();
   });
 
-  this.renderObjects();
+  $(document).on('keydown', function(e) {
+    switch (e.keyCode) {
 
-  $(document).on('keydown', function() {
-    game.start();
-});
+    case 37:
+    case 38:
+    case 39:
+    case 40:
+
+    this.renderObjects();
+    this.start();
+    break;
+
+  }
+}.bind(this));
+
+//   $(document).on('keydown', function() {
+//     game.start();
+// });
 }
 
 window.onload = function() {
   $(".player").hide();
   $(".score").hide();
   $(".lives").hide();
+  $(".gameOver").hide();
 
   $('.start').on('click', function() {
     game = new Game();
