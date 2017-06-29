@@ -73,6 +73,18 @@ height: 50px;
   color: white;
 }
 
+.lives{
+  position: absolute;
+  font-size: 1.5em;
+  top: 600px;
+  left: 600px;
+  z-index: 5;
+  margin: 0;
+  padding: 0;
+  border: 0px;
+  color: white;
+}
+
 .pressStart{
   position: absolute;
   font-size: 2em;

@@ -10,6 +10,7 @@ function Game() {
   }
   this.player1Score = 0;
   this.player2Score = 0;
+  this.playerLives = 3;
   //Grid construction. Everything is wall
   this.mapScenario = [
     [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
@@ -58,18 +59,41 @@ Game.prototype.update = function() {
 
   this.soldier.move();
   this.soldier.checkLimit();
+  for (var i = 0; i < this.arrayRobots.length; i++) {
+    var flag = this.chekCollisionSoldierRobot(this.soldier, this.arrayRobots[i]);
+    if (flag == true) {
 
-  var that = this;
-  this.arrayRobots.forEach(function(e, i) {
-    if (i < this.arrayRobots.length - 1){
+      this.playerLives--;
+      clearInterval(this.intervalId);
+
+      if (this.playerLives == 0) {
+        if (this.state == "player1") {
+          this.state == "player2";
+          //this.restart();
+          return
+        } else if (this.state == "player2") {
+          this.state == "gameOver";
+          //this.restart();
+          return
+        }
+      } else {
+        //this.restart();
+        return
+      }
+    }
+  }
+
+var that = this;
+this.arrayRobots.forEach(function(e, i) {
+  if (i < this.arrayRobots.length - 1) {
     e.move();
     e.checkLimit()
-    }
-  }.bind(this));
-  this.arrayRobots[2].moveTarget(this.soldier.x, this.soldier.y);
-  this.arrayRobots[2].checkLimit();
-  this.renderObjects();
-  this.checkGameState();
+  }
+}.bind(this));
+this.arrayRobots[2].moveTarget(this.soldier.x, this.soldier.y);
+this.arrayRobots[2].checkLimit();
+this.renderObjects();
+this.checkGameState();
 }
 
 Game.prototype.renderObjects = function() {
@@ -92,6 +116,7 @@ Game.prototype.checkGameState = function() {
   if (this.state == "pressStart") {
     $(".player").hide();
     $(".score").hide();
+    $(".lives").hide();
     $(".intro").show();
     $(".pressStart").show();
     $(".startGame").show();
@@ -105,6 +130,8 @@ Game.prototype.checkGameState = function() {
     $(".player").show();
     $(".score").html("Score: " + this.player1Score);
     $(".score").show();
+    $(".lives").show();
+    $(".lives").html("Lifes: " + this.playerLives);
   }
 
   if (this.state == "player2") {
@@ -244,6 +271,14 @@ Game.prototype._assignControlsToKeys = function() {
   }.bind(this));
 }
 
+Game.prototype.chekCollisionSoldierRobot = function(element1, element2, size1, size2) {
+  var vx = element1.centerX - element2.centerX;
+  var vy = element1.centerY - element2.centerY;
+
+  var minDistance = (((element1.size + element2.size)/2)-10);
+  return (Math.abs(vx) <= minDistance && Math.abs(vy) <= minDistance)
+}
+
 window.onload = function() {
   $(".player").hide();
   $(".score").hide();
@@ -254,97 +289,3 @@ window.onload = function() {
     game.start();
   });
 }
-
-
-/*
-window.addEventListener("keyup", function(event) {
-  switch (event.keyCode) {
-    case UP:
-      moveUp = false;
-      break;
-
-    case DOWN:
-      moveDown = false;
-      break;
-
-    case LEFT:
-      moveLeft = false;
-      break;
-
-    case RIGHT:
-      moveRight = false;
-      break;
-  }
-}, false);*/
-
-/*
-
-function buildMap(map) {
-  for (var row = 0; row < ROWS; row++) {
-    for (var column = 0; column < COLUMNS; column++) {
-      var currentTile = levelMap[row][column];
-
-      if (currentTile !== EMPTY) {
-        //Find the tile's x and y position on the tile sheet
-        var tilesheetX = Math.floor((currentTile - 1) % tilesheetColumns) * SIZE;
-        var tilesheetY = Math.floor((currentTile - 1) / tilesheetColumns) * SIZE;
-
-        switch (currentTile) {
-          case FLOOR:
-            var floor = Object.create(spriteObject);
-            floor.sourceX = tilesheetX;
-            floor.sourceY = tilesheetY;
-            floor.x = column * SIZE;
-            floor.y = row * SIZE;
-            sprites.push(floor);
-            break;
-
-          case BOX:
-            var box = Object.create(spriteObject);
-            box.sourceX = tilesheetX;
-            box.sourceY = tilesheetY;
-            box.x = column * SIZE;
-            box.y = row * SIZE;
-            sprites.push(box);
-            boxes.push(box);
-            break;
-
-          case WALL:
-            var wall = Object.create(spriteObject);
-            wall.sourceX = tilesheetX;
-            wall.sourceY = tilesheetY;
-            wall.x = column * SIZE;
-            wall.y = row * SIZE;
-            sprites.push(wall);
-            break;
-
-          case BOMB:
-            var bomb = Object.create(spriteObject);
-            bomb.sourceX = tilesheetX;
-            bomb.sourceY = tilesheetY;
-            bomb.sourceWidth = 48;
-            bomb.sourceHeight = 36;
-            bomb.width = 48;
-            bomb.height = 36;
-            bomb.x = column * SIZE + 10;
-            bomb.y = row * SIZE + 16;
-            bombs.push(bomb);
-            sprites.push(bomb);
-            break;
-
-          case ALIEN:
-            //Note: "alien" has already been defined in the main
-            //program so you don't neeed to preceed it with "var"
-            alien = Object.create(spriteObject);
-            alien.sourceX = tilesheetX;
-            alien.sourceY = tilesheetY;
-            alien.x = column * SIZE;
-            alien.y = row * SIZE;
-            sprites.push(alien);
-            break;
-        }
-      }
-    }
-  }
-}
-*/
