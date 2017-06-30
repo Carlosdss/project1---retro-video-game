@@ -1,4 +1,8 @@
 function Game() {
+
+  this.collisionCorrectionX = 0;
+  this.collisionCorrectionY = 0;
+
   this.state = "player1"
 
   this.codes = {
@@ -42,6 +46,7 @@ function Game() {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   ];
+  this.arrayRocks = []
   this._renderMap(this.mapScenario);
   this._renderMap(this.gameObjects);
   this._generateObjects(3)
@@ -54,7 +59,7 @@ Game.prototype.start = function() {
     //this.intervalId !== null && clearInterval(this.intervalId)
 
     if(this.intervalId!==null){clearInterval(this.intervalId)}
-    this.intervalId = setInterval(this.update.bind(this), 70);
+    this.intervalId = setInterval(this.update.bind(this), 80);
 
 };
 
@@ -62,9 +67,10 @@ Game.prototype.update = function() {
 
   this.soldier.move();
   this.soldier.checkLimit();
+  this.checkRocksSoldier();
   for (var i = 0; i < this.arrayRobots.length; i++) {
     var flag = false;
-    var flag = this.chekCollisionSoldierRobot(this.soldier, this.arrayRobots[i]);
+    var flag = this.checkCollision(this.soldier, this.arrayRobots[i]);
     if (flag == true) {
       clearInterval(this.intervalId);
       this.playerLives--;
@@ -79,12 +85,14 @@ Game.prototype.update = function() {
     if (i < this.arrayRobots.length - 1) {
       e.move();
       e.checkLimit()
+      this.checkRocksRobot(e);
     }
   }.bind(this));
   this.arrayRobots[2].moveTarget(this.soldier.x, this.soldier.y);
   this.arrayRobots[2].checkLimit();
+  this.checkRocksRobot(this.arrayRobots[2]);
   flag = false;
-  flag = this.chekCollisionSoldierRobot(this.soldier, this.arrayRobots[2]);
+  flag = this.checkCollision(this.soldier, this.arrayRobots[2]);
     if (flag == true) {
       clearInterval(this.intervalId);
       this.playerLives--;
@@ -153,6 +161,7 @@ Game.prototype.checkGameState = function() {
     $(".score").hide();
     $(".gameOver").show();
     $(".pressStart").show();
+    //$(".pressStart").css("z-index:" 15});
   }
 }
 
@@ -162,7 +171,7 @@ Game.prototype._generateObjects = function(robots) {
   //this.arraySprites.push(this.soldier);
   for (i = 0; i < robots; i++) {
     var name = "robot" + i;
-    Robot[name] = new Robot(4);
+    Robot[name] = new Robot(3);
     this.arrayRobots.push(Robot[name]);
   }
 }
@@ -205,6 +214,8 @@ Game.prototype._renderMap = function(map) {
           box.appendChild(cell);
           cell.src = "img/boulder.gif";
           cell.style.backgroundImage = "url(img/moonFloor2.png)";
+          var rock = new Rock(j, i);
+          this.arrayRocks.push(rock);
           break;
         case limit:
           cell.setAttribute("class", "cell limit");
@@ -274,17 +285,99 @@ Game.prototype._assignControlsToKeys = function() {
   }.bind(this));
 }
 
-Game.prototype.chekCollisionSoldierRobot = function(element1, element2) {
+
+Game.prototype.checkCollisionSoldier = function(element1, element2) {
   var centerX1 = element1.x + element1.size/2;
   var centerX2 = element2.x + element2.size/2;
   var centerY1 = element1.y + element1.size/2;
   var centerY2 = element2.y + element2.size/2;
 
-  var vx = Math.abs(centerX1 - centerX2);
-  var vy = Math.abs(centerY1 - centerY2);
+  //var vx = Math.abs(centerX1 - centerX2);
+  //var vy = Math.abs(centerY1 - centerY2);
+  var vx = centerX1 - centerX2;
+  var vy = centerY1 - centerY2;
+  var minDistance = ((element1.size + element2.size) / 2);
+  var check = (Math.abs(vx) < minDistance && Math.abs(vy) < minDistance);
 
-  var minDistance = (((element1.size + element2.size) / 2) - 5);
-  return (vx <= minDistance && vy <= minDistance)
+  if(check){
+
+    if((Math.abs(vx) < minDistance) && (Math.abs(element1.directionX) == 1)){
+      element1.directionX = 0;
+      element1.x += ((minDistance) - Math.abs(vx)) * Math.sign(vx);
+    }
+
+    if((Math.abs(vy) < minDistance) && (Math.abs(element1.directionY) == 1)){
+      element1.directionY = 0;
+      element1.y += ((minDistance) - Math.abs(vy)) * Math.sign(vy);
+    }
+  }
+  return check;
+}
+
+Game.prototype.checkCollisionRobot = function(element1, element2) {
+  var centerX1 = element1.x + element1.size/2;
+  var centerX2 = element2.x + element2.size/2;
+  var centerY1 = element1.y + element1.size/2;
+  var centerY2 = element2.y + element2.size/2;
+
+  //var vx = Math.abs(centerX1 - centerX2);
+  //var vy = Math.abs(centerY1 - centerY2);
+  var vx = centerX1 - centerX2;
+  var vy = centerY1 - centerY2;
+  var minDistance = ((element1.size + element2.size) / 2);
+  var check = (Math.abs(vx) < minDistance && Math.abs(vy) < minDistance);
+
+  if(check){
+    if((Math.abs(vx) < minDistance) && ((Math.abs(element1.direction) == 0)) || (Math.abs(element1.direction) == 2)){
+      element1._randomDirection();
+      element1.x += ((minDistance) - Math.abs(vx)) * Math.sign(vx);
+    }
+
+    if((Math.abs(vy) < minDistance) && ((Math.abs(element1.direction) == 1)) || (Math.abs(element1.direction) == 3)){
+      element1._randomDirection();
+      element1.y += ((minDistance) - Math.abs(vy)) * Math.sign(vy);
+    }
+  }
+  return check;
+}
+
+
+Game.prototype.checkCollision = function(element1, element2) {
+  var centerX1 = element1.x + element1.size/2;
+  var centerX2 = element2.x + element2.size/2;
+  var centerY1 = element1.y + element1.size/2;
+  var centerY2 = element2.y + element2.size/2;
+
+  var vx = centerX1 - centerX2;
+  var vy = centerY1 - centerY2;
+  var minDistance = ((element1.size + element2.size) / 2);
+  var check = (Math.abs(vx) < minDistance && Math.abs(vy) < minDistance);
+
+  if(check){
+
+    if((Math.abs(vx) < minDistance) && (Math.abs(element1.directionX) == 1)){
+      element1.directionX = 0;
+      element1.x += ((minDistance) - Math.abs(vx)) * Math.sign(vx);
+    }
+
+    if((Math.abs(vy) < minDistance) && (Math.abs(element1.directionY) == 1)){
+      element1.directionY = 0;
+      element1.y += ((minDistance) - Math.abs(vy)) * Math.sign(vy);
+    }
+  }
+  return check;
+}
+
+Game.prototype.checkRocksSoldier = function(){
+  for(var i=0; i<this.arrayRocks.length; i++){
+    this.checkCollisionSoldier(this.soldier, this.arrayRocks[i]);
+  };
+}
+
+Game.prototype.checkRocksRobot = function(robot){
+  for(var i=0; i<this.arrayRocks.length; i++){
+    this.checkCollisionRobot(robot, this.arrayRocks[i]);
+  };
 }
 
 Game.prototype.restart = function() {
@@ -299,16 +392,6 @@ Game.prototype.restart = function() {
     this.playerLives = 3;
   }
 
-/*
-  var cancelKeypress = false;
-
-  document.onkeydown = function(evt) {
-    evt = evt || window.event;
-    cancelKeypress = /^(13|32|37|38|39|40)$/.test("" + evt.keyCode);
-    if (cancelKeypress) {
-      return false;
-    }
-  };*/
 
   this.soldier.x = 700;
   this.soldier.y = 550;

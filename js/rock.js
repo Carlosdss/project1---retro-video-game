@@ -1,4 +1,4 @@
-function bomb(x, y) {
+function Rock(x, y) {
   this.size = 50;
   this.row = y;
   this.column = x;
